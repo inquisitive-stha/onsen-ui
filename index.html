@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Onsen UI Memo App 2.0</title>
+
+  <script src="lib/onsen/js/onsenui.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/jquery.min.js"></script>
+  
+
+  <link rel="stylesheet" href="lib/onsen/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsen/css/onsen-css-components.css">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+<ons-splitter>
+  <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+    <ons-page>
+      <ons-list>
+        <ons-list-item onclick="fn.load('list.html')" tappable>
+          List
+        </ons-list-item>
+        <ons-list-item onclick="fn.load('form.html')" tappable>
+          Form
+        </ons-list-item>
+        <ons-list-item onclick="fn.load('home.html')" tappable>
+          Home
+        </ons-list-item>
+      </ons-list>
+    </ons-page>
+  </ons-splitter-side>
+  <ons-splitter-content id="content" page="list.html"></ons-splitter-content>
+</ons-splitter>
+
+<ons-template id="home.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Artist Factory
+      </div>
+    </ons-toolbar>
+    <p style="text-align: center; opacity: 0.6; padding-top: 20px;">
+      Swipe right to open the menu!
+    </p>
+  </ons-page>
+</ons-template>
+
+<ons-template id="form.html">
+  <ons-page>
+  <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    <div class="center">Input</div>
+  </ons-toolbar>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <p>
+      <ons-input id="artist" modifier="underbar" type="text" placeholder="Enter Artist Name" float></ons-input>
+    </p>
+    <p>
+      <ons-input id="description" modifier="underbar" type="text" placeholder="Description" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;">
+      <ons-button onclick="submit_form();">Submit</ons-button>
+    </p>
+  </div>
+
+
+
+  </ons-list>
+</ons-page>
+</ons-template>
+
+<ons-template id="list.html">
+  <ons-page>
+  <ons-toolbar>
+    <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+    </div>
+    <div class="center">Lists</div>
+  </ons-toolbar>
+
+  <br />
+  <ons-button onclick="getData();">Show Artist List</ons-button>
+
+  <ons-list id="artist_list" modifier="inset">
+  </ons-list>
+
+  <br />
+</ons-page>
+</ons-template>
+</body>
+<script type="text/javascript">
+    
+    
+    $(document).ready(function(){
+        
+       
+    });
+    
+    
+    
+    function getData()
+    {
+        $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "http://192.168.0.33/ptek_classes/curl_server/api.php",
+                data: { action: "get_all"}
+              })
+                .done(function( msg ) {
+                    $('#artist_list').html('');
+                    $(msg).each(function(k, v){
+                        
+                        $('#artist_list').append('<ons-list-item modifier="longdivider">'+v.title+'</ons-list-item>');
+                        
+                    });
+                    
+                });
+    }
+    
+    
+    
+    
+    function submit_form()
+    {
+        title = $('#artist').val();
+        description = $('#description').val();
+        
+        $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "http://192.168.0.33/ptek_classes/curl_server/api.php",
+                data: { action: "insert", title : title, description: description}
+              })
+                .done(function( msg ) {
+                    alert(msg.message);                    
+                });
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    window.fn = {};
+
+window.fn.open = function() {
+  var menu = document.getElementById('menu');
+  menu.open();
+};
+
+window.fn.load = function(page) {
+  var content = document.getElementById('content');
+  var menu = document.getElementById('menu');
+  content.load(page)
+    .then(menu.close.bind(menu));
+};
+
+    </script>
+    
+    
+</html>
